@@ -1,0 +1,12 @@
+{
+  "name": "trex3-watch",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@zeppos/zml": "0.0.41"
+  },
+  "devDependencies": {
+    "@zeppos/device-types": "3.0.0"
+  }
+}
