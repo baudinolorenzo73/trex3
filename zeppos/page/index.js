@@ -37,7 +37,7 @@ Page(BasePage({
       this.callback=()=>this.onPosition();
       this.gps.onChange(this.callback);
       this.gps.start();this.active=true;
-      this.gpsButton.setProperty(prop.TEXT,'Ferma GPS');
+      this.gpsButton.setProperty(prop.MORE,{x:100*this.s,y:292*this.s,w:280*this.s,h:52*this.s,text:'Ferma GPS'});
       // Solo durante la prova: la continuita a display spento non e ancora collaudata.
       try{setPageBrightTime({brightTime:600000});}catch(_){}
       this.status('Ricerca satelliti...');this.onPosition();
@@ -70,7 +70,7 @@ Page(BasePage({
     try{this.gps?.stop();}catch(_){}
     this.gps=null;this.callback=null;
     try{resetPageBrightTime();}catch(_){}
-    if(this.alive){this.gpsButton.setProperty(prop.TEXT,'Avvia GPS');this.status('GPS fermato');}
+    if(this.alive){this.gpsButton.setProperty(prop.MORE,{x:100*this.s,y:292*this.s,w:280*this.s,h:52*this.s,text:'Avvia GPS'});this.status('GPS fermato');}
   },
   onDestroy(){this.stopGps();this.alive=false;}
 }));

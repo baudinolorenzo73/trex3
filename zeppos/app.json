@@ -40,10 +40,10 @@
       },
       "platforms": [
         {
-          "st": "r",
-          "dw": 480
+          "st": "r"
         }
-      ]
+      ],
+      "designWidth": 480
     }
   },
   "i18n": {

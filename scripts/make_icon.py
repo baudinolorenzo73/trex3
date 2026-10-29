@@ -16,6 +16,6 @@ for y in range(size):
 def chunk(kind, data):
     return struct.pack('>I', len(data)) + kind + data + struct.pack('>I', zlib.crc32(kind+data) & 0xffffffff)
 png = b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', struct.pack('>IIBBBBB',size,size,8,2,0,0,0)) + chunk(b'IDAT', zlib.compress(bytes(rows))) + chunk(b'IEND',b'')
-path=Path('zeppos/assets/icon.png')
+path=Path('zeppos/assets/default.r/icon.png')
 path.parent.mkdir(parents=True,exist_ok=True)
 path.write_bytes(png)

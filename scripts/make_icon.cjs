@@ -21,5 +21,5 @@ for(let y=0;y<size;y++)for(let x=0;x<size;x++){
 }
 const header=Buffer.alloc(13);header.writeUInt32BE(size,0);header.writeUInt32BE(size,4);header[8]=8;header[9]=2;
 const png=Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',header),chunk('IDAT',zlib.deflateSync(rows)),chunk('IEND',Buffer.alloc(0))]);
-const output=path.resolve(__dirname,'../zeppos/assets/icon.png');
+const output=path.resolve(__dirname,'../zeppos/assets/default.r/icon.png');
 fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,png);
