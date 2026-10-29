@@ -1,0 +1,10 @@
+{
+  "name": "Avigliana - prova cartografica",
+  "latitude": 45.06,
+  "longitude": 7.39,
+  "source": "https://download.geofabrik.de/europe/italy/nord-ovest-latest.osm.pbf",
+  "attribution": "© OpenStreetMap contributors",
+  "purpose": "Confronto con mappa nativa. Centro dimostrativo, non itinerario.",
+  "upstream": "Gared/zeppos-map-creator",
+  "upstreamCommit": "d45defcd8325a4e045a9b88b523ebbda60220d87"
+}

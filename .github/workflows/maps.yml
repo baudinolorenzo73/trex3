@@ -1,0 +1,80 @@
+name: Prepara mappa OSM
+on:
+  workflow_dispatch:
+    inputs:
+      latitude:
+        description: Centro mappa - latitudine (Nord-Ovest Italia)
+        default: '45.06'
+        required: true
+      longitude:
+        description: Centro mappa - longitudine (Nord-Ovest Italia)
+        default: '7.39'
+        required: true
+  push:
+    branches: [main, sviluppo-prima-prova]
+    paths: ['maps/**', 'scripts/check_map.py', '.github/workflows/maps.yml']
+permissions:
+  contents: read
+concurrency:
+  group: osm-map-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  map:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verifica input e dati area
+        env:
+          LAT: ${{ inputs.latitude || '45.06' }}
+          LON: ${{ inputs.longitude || '7.39' }}
+        run: |
+          python3 - <<'PY'
+          import json, math, os
+          from pathlib import Path
+          lat, lon = float(os.environ['LAT']), float(os.environ['LON'])
+          if not (math.isfinite(lat) and math.isfinite(lon) and 43.5 <= lat <= 46.8 and 6.3 <= lon <= 10.6):
+              raise SystemExit('Per questa prova scegliere un centro nel Nord-Ovest italiano')
+          area = json.loads(Path('maps/area.json').read_text())
+          area.update(latitude=lat, longitude=lon)
+          Path('out').mkdir(exist_ok=True)
+          Path('data').mkdir(exist_ok=True)
+          Path('out/area.json').write_text(json.dumps(area, ensure_ascii=False, indent=2))
+          with open(os.environ['GITHUB_ENV'], 'a') as stream:
+              stream.write(f'MAP_LAT={lat}\nMAP_LON={lon}\n')
+          PY
+      - name: Recupera convertitore a versione fissata
+        uses: actions/checkout@v4
+        with:
+          repository: Gared/zeppos-map-creator
+          ref: d45defcd8325a4e045a9b88b523ebbda60220d87
+          path: tools/map-creator
+          persist-credentials: false
+      - name: Costruisci convertitore
+        run: docker build -t trex-map tools/map-creator
+      - name: Scarica dati OSM (non tile del sito OSM)
+        run: |
+          set -euo pipefail
+          cd data
+          curl --fail --location --retry 2 --max-time 600 -o nord-ovest-latest.osm.pbf https://download.geofabrik.de/europe/italy/nord-ovest-latest.osm.pbf
+          curl --fail --location --retry 2 -o source.md5 https://download.geofabrik.de/europe/italy/nord-ovest-latest.osm.pbf.md5
+          expected="$(awk '{print $1}' source.md5)"
+          [[ "$expected" =~ ^[a-fA-F0-9]{32}$ ]]
+          printf '%s  nord-ovest-latest.osm.pbf\n' "$expected" | md5sum --check -
+          sha256sum nord-ovest-latest.osm.pbf > ../out/source-sha256.txt
+      - name: Genera mappa
+        run: |
+          set -euo pipefail
+          docker run --rm --volume "$PWD/data:/data" trex-map "$MAP_LAT" "$MAP_LON" /data/nord-ovest-latest.osm.pbf
+          mapfile -t maps < <(find data -maxdepth 1 -name 'map*.zip' -type f)
+          [[ "${#maps[@]}" -eq 1 ]]
+          cp "${maps[0]}" out/trex3-mappa-osm.zip
+          python3 scripts/check_map.py out/trex3-mappa-osm.zip --report out/controllo-mappa.json
+          cp docs/MAPPE.md out/ISTRUZIONI.md
+          printf '\nMappa generata; compatibilita T-Rex 3 Pro e dettaglio grafico ancora da provare.\n' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trex3-mappa-osm
+          path: out/
+          if-no-files-found: error
+          retention-days: 14
