@@ -1,0 +1,55 @@
+{
+  "configVersion": "v3",
+  "app": {
+    "appId": 1901029,
+    "appName": "T-Rex GPS Bridge",
+    "appType": "app",
+    "version": {
+      "code": 100,
+      "name": "0.1.0"
+    },
+    "icon": "icon.png",
+    "vender": "Lollo",
+    "description": "Prova GPS e OsmAnd - by Lollo 2026"
+  },
+  "permissions": [
+    "device:os.geolocation",
+    "data:os.device.info"
+  ],
+  "runtime": {
+    "apiVersion": {
+      "compatible": "3.6.0",
+      "target": "4.2.0",
+      "minVersion": "3.6"
+    }
+  },
+  "targets": {
+    "default": {
+      "module": {
+        "page": {
+          "pages": [
+            "page/index"
+          ]
+        },
+        "app-side": {
+          "path": "app-side/index"
+        },
+        "setting": {
+          "path": "setting/index"
+        }
+      },
+      "platforms": [
+        {
+          "st": "r"
+        }
+      ],
+      "designWidth": 480
+    }
+  },
+  "i18n": {
+    "en-US": {
+      "appName": "T-Rex GPS Bridge"
+    }
+  },
+  "defaultLanguage": "en-US"
+}

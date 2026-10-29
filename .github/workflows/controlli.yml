@@ -1,0 +1,17 @@
+name: Controlli
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python3 -m unittest discover -s tests -p 'test_*.py'
+      - run: python3 -m py_compile scripts/*.py
+      - name: Test JavaScript quando presenti
+        run: |
+          if find tests -maxdepth 1 -name '*.test.mjs' | grep -q .; then npm test; fi

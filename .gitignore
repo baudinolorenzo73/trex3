@@ -1,0 +1,11 @@
+node_modules/
+.tools/
+.gradle/
+**/build/
+android/local.properties
+*.keystore
+*.jks
+.env
+out/
+data/
+zeppos/dist/
