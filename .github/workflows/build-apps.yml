@@ -2,9 +2,9 @@ name: Compila APK e Zepp OS
 on:
   push:
     branches: [main, sviluppo-prima-prova]
-    paths: ['android/**', 'zeppos/**', 'scripts/make_icon.py', '.github/workflows/build-apps.yml', 'tests/**']
+    paths: ['android/**', 'zeppos/**', 'scripts/**', '.github/workflows/build-apps.yml', 'tests/**']
   pull_request:
-    paths: ['android/**', 'zeppos/**', 'scripts/make_icon.py', '.github/workflows/build-apps.yml', 'tests/**']
+    paths: ['android/**', 'zeppos/**', 'scripts/**', '.github/workflows/build-apps.yml', 'tests/**']
   workflow_dispatch:
 permissions:
   contents: read
@@ -22,11 +22,12 @@ jobs:
         with:
           node-version: '22'
       - run: npm test
-      - run: python3 scripts/make_icon.py
+      - run: node scripts/make_icon.cjs
       - run: npm install --no-audit --no-fund
         working-directory: zeppos
+      - run: node scripts/setup-zeus.cjs
       - name: Compila Zepp OS
-        run: npx --yes @zeppos/zeus-cli@1.9.3 build
+        run: npx --no-install zeus build
         working-directory: zeppos
       - uses: actions/upload-artifact@v4
         with:
@@ -45,6 +46,8 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
       - name: Installa SDK
         run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
       - uses: gradle/actions/setup-gradle@v4

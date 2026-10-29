@@ -3,7 +3,11 @@ setlocal
 cd /d "%~dp0zeppos"
 call npm install --no-audit --no-fund
 if errorlevel 1 goto errore
-call npx --yes @zeppos/zeus-cli@1.9.3 preview
+node ..\scripts\setup-zeus.cjs
+if errorlevel 1 goto errore
+node ..\scripts\make_icon.cjs
+if errorlevel 1 goto errore
+call npx --no-install zeus preview
 if errorlevel 1 goto errore
 pause
 exit /b 0
